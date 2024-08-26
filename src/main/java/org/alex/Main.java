@@ -7,6 +7,7 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class Main {
                  double medianPrice = calculateMedian(prices);
 
                  double averagePrice = ticketList.stream().mapToInt(t -> t.price).average().orElse(0.0);
-                 double difference = averagePrice - medianPrice;
+                 double difference = Math.abs(medianPrice - averagePrice);
 
                  Duration minFlightTime = ticketList.stream()
                          .map(ticket -> {
