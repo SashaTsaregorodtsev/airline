@@ -7,9 +7,7 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -52,7 +50,7 @@ public class Main {
             double medianPrice = calculateMedian(allPrices);
             double averagePrice = allPrices.stream().mapToInt(t -> t).average().orElse(0.0);
             double overallDifference = Math.abs(averagePrice - medianPrice);
-            ps.println("Средняя цена: " + overallDifference);
+            ps.println("Разница (средняя цена - медиана): " + overallDifference);
         }catch (IOException e){
             e.printStackTrace();
         }finally {
@@ -64,7 +62,7 @@ public class Main {
     private static double calculateMedian(List<Integer> prices) {
         int size = prices.size();
         if (size == 0) return 0.0;
-
+        Collections.sort(prices);
         if (size % 2 == 1) {
             return prices.get(size / 2);
         } else {
