@@ -7,6 +7,7 @@ import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ public class Main {
              Map<String,List<Ticket>> groupingCarrier = formatTickets.stream().collect(Collectors.groupingBy(t -> t.carrier));
              ps.println(String.format("Группировка по перевозчикам: %s - %s",from,to));
              ps.println("----------------------");
+             List<Integer> allPrices = new ArrayList<>();
              for (Map.Entry<String, List<Ticket>> entry : groupingCarrier.entrySet()) {
                  String carrier = entry.getKey();
                  List<Ticket> ticketList = entry.getValue();
@@ -33,11 +35,7 @@ public class Main {
                          .sorted()
                          .collect(Collectors.toList());
 
-                 double medianPrice = calculateMedian(prices);
-
-                 double averagePrice = ticketList.stream().mapToInt(t -> t.price).average().orElse(0.0);
-                 double difference = Math.abs(medianPrice - averagePrice);
-
+                 allPrices.addAll(prices);
                  Duration minFlightTime = ticketList.stream()
                          .map(ticket -> {
                              LocalDateTime departureDate = LocalDateTime.parse(ticket.departure_date + " " + ticket.departure_time, format);
@@ -48,14 +46,17 @@ public class Main {
                          .orElse(Duration.ZERO);
 
                  ps.println(String.format("Перевозчик: %s%n", carrier));
-                 ps.println(String.format("Разница: %.2f%n", difference));
                  ps.println(String.format("Минимальное время полета: %d ч %d мин%n", minFlightTime.toHours(), minFlightTime.toMinutesPart()));
                  ps.println("----------------------");
              }
-             ps.close();
-
+            double medianPrice = calculateMedian(allPrices);
+            double averagePrice = allPrices.stream().mapToInt(t -> t).average().orElse(0.0);
+            double overallDifference = Math.abs(averagePrice - medianPrice);
+            ps.println("Средняя цена: " + overallDifference);
         }catch (IOException e){
             e.printStackTrace();
+        }finally {
+            ps.close();
         }
 
     }
